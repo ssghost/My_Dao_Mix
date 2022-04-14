@@ -1,0 +1,19 @@
+{
+  "name": "my_dao_mix",
+  "version": "1.0.0",
+  "description": "An experimental Dao creating, publishing, governing solidity contracts and its utils for learning Dao programming.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "git+https://github.com/ssghost/My_Dao_Mix.git",
+  "author": "ssghost <ssprof0@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ssghost/My_Dao_Mix/issues"
+  },
+  "homepage": "https://github.com/ssghost/My_Dao_Mix#readme",
+  "devDependencies": {
+    "hardhat": "^2.9.3"
+  }
+}
