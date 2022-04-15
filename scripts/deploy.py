@@ -11,8 +11,7 @@ from brownie import (
 )
 from web3 import Web3, constants
 
-def deploy_governor():
-    account = get_account()
+def deploy_governor(account):
     dgv_token = (
         DaoGovToken.deploy(
             {'from': account},
@@ -54,8 +53,7 @@ def deploy_governor():
     )
     Txn.wait(1)
 
-def deploy_daobox():
-    account = get_account()
+def deploy_daobox(account):
     dao_box = DaoBox.deploy({'from': account})
     Txn = dao_box.transferOwnership(TimeLock[-1], {'from': account})
     Txn.wait(1)
@@ -69,8 +67,7 @@ def get_account(index=None, id=None):
         return accounts.load(id)
     return accounts.add(config["wallets"]["from_key"])
 
-def propose(store_value):
-    account = get_account()
+def propose(account, store_value):
     args = (store_value,)
     encoded_function = Contract.from_abi("DaoBox", DaoBox[-1], DaoBox.abi).store.encode_input(
         *args
@@ -97,7 +94,7 @@ def propose(store_value):
     return propose_Txn.return_value
 
 
-def vote(proposal_id: int, vote: int):
+def vote(account, proposal_id: int, vote: int):
     print(f"voting yes on {proposal_id}")
     account = get_account()
     Txn = DaoGovernor[-1].castVoteWithReason(
@@ -107,8 +104,7 @@ def vote(proposal_id: int, vote: int):
     print(Txn.events["VoteCast"])
 
 
-def queue_and_execute(store_value):
-    account = get_account()
+def queue_and_execute(account, store_value):
     args = (store_value,)
     encoded_function = Contract.from_abi("DaoBox", DaoBox[-1], DaoBox.abi).store.encode_input(
         *args
@@ -139,14 +135,15 @@ def move_blocks(amount):
     print(chain.height)
 
 def main():
-    deploy_governor()
-    deploy_daobox()
+    account = get_account()
+    deploy_governor(account)
+    deploy_daobox(account)
     proposal_id = propose(5)
     print(f"Proposal ID {proposal_id}")
     if network.show_active() in ["hardhat", "development", "ganache"]:
         move_blocks(1)
-    vote(proposal_id, 1)
+    vote(account, proposal_id, 1)
     if network.show_active() in ["hardhat", "development", "ganache"]:
         move_blocks(5)
     print(f" This proposal is currently {DaoGovernor[-1].state(proposal_id)}")
-    queue_and_execute(5)
+    queue_and_execute(account, 5)
